@@ -3,15 +3,39 @@ import requests
 import json
 import psycopg2
 from threading import Thread
+from dotenv import dotenv_values
+config = dotenv_values(".env")
 rc_list=[]
 cn_list=[]
 #connect to database
 # put the actual password on password field
 conn = psycopg2.connect(
-   database="esgdata", user='postgres', password='mypassword', host='127.0.0.1', port= '5432'
+   database=config["DATABASE"], user=config["DATABASE_USER"], password=config["DATABASE_PASSWORD"], host=config["DATABASE_HOST"], port= config["DATABASE_PORT"]
 )
 
+
 cursor = conn.cursor()
+query="""
+    CREATE TABLE IF NOT EXISTS company
+    (
+        companyname character varying(255)  NOT NULL,
+        riccode character varying(255),
+        CONSTRAINT company_pkey PRIMARY KEY (companyname)
+    );
+    CREATE TABLE IF NOT EXISTS esgscores
+    (
+    companyname character varying(255),
+    enviroment integer,
+    social integer,
+    governance integer,
+    ranking integer,
+    totalindustries integer,
+    tscore integer,
+    CONSTRAINT esgscores_companyname_fkey FOREIGN KEY (companyname)
+        REFERENCES company(companyname)
+    );
+    """
+cursor.execute(query)
 #iterate through companies and append them to  a list
 with open('esgsearchsuggestions.json','r') as f:
     data = json.load(f)
