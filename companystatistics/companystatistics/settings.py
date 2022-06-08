@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
+# Initialise environment
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,14 +81,15 @@ WSGI_APPLICATION = 'companystatistics.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 #put actual password on password field
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'esgdata', 
-        'USER': 'postgres', 
-        'PASSWORD': 'mypassword',
-        'HOST': '127.0.0.1', 
-        'PORT': '5432',
+        'NAME': env('DATABASE'), 
+        'USER': env('DATABASE_USER'), 
+        'PASSWORD':env( 'DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST'), 
+        'PORT': env('DATABASE_PORT'),
     }
 }
 
